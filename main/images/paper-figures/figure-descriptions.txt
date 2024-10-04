@@ -1,0 +1,7 @@
+Fig.1 - Best-fit w (w*) for Hilltop (K=2,3,4) models as a funciton of w_o.
+
+Fig.2 - z_pivot values for Hilltop (K=2,3,4) models as a function of w_o.
+
+Fig.3 - Best-fit w (w*) in the Linder model as a function of w_o and w_a.
+
+Fig.4 - z_pivot in the Linder model as a funciton of w_o and w_a.

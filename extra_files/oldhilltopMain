@@ -1,0 +1,9 @@
+### HILLTOP ###
+    print('Running... Fetching Hilltop K=2')
+    hilltopK2_plots = hilltopk2plot(z_list)
+    print('Running... Fetching Hilltop K=3')
+    hilltopK3_plots = hilltopk3plot(z_list)
+    print('Done with Hilltop calculations')
+    plot_w_vs_const_w_2models(hilltopK2_plots, hilltopK3_plots)  
+    plot_z_pivot_w_2models(hilltopK2_plots, hilltopK3_plots)  
+###    
