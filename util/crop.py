@@ -1,10 +1,10 @@
 from PIL import Image
 import numpy as np
 
-image_file_name = "images\\fig1-hilltop-models-best-w" # no png
-image_file_name = "images\\fig2-hilltop-models-z-pivot" # no png
-image_file_name = "images\\fig3-linder-best-w" # no png
-image_file_name = "images\\fig4-linder-z-pivot" # no png
+image_file_name = "figures_and_data\\hilltop_models_best_fit" # no .png
+image_file_name = "figures_and_data\\hilltop_models_z_pivot" 
+image_file_name = "figures_and_data\\linder_best_w"
+image_file_name = "figures_and_data\\linder_z_pivot" 
 
 
 # Open the image file
@@ -31,4 +31,4 @@ with Image.open(image_file_name+".png") as img:
     # Save the cropped image
     cropped_img.save(image_file_name+"-cropped.png", format="PNG")
 
-print("Image cropped and saved as angle-figure-cropped.png")
+print("Image cropped as "+image_file_name+"-cropped.png")
