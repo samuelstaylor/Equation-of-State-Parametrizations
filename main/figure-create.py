@@ -1,5 +1,5 @@
 # What do we learn by mapping dark energy to a single value of w?
-# Author: Samuel S. Taylor and Robert Scherrer
+# Author: Samuel S. Taylor and Robert J. Scherrer
 
 from models.const_w import ConstantEquationState
 from models.linder import Linder
@@ -21,6 +21,36 @@ HUBBLE_CONSTANT = .7
 OMEGA_M = .3
 OMEGA_PHI = .7
 
+def read_hilltop_data(filename):
+    models = []
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+        name = lines[0].strip()
+        for line in lines[2:]:
+            w_o, best_w, z_pivot = map(float, line.split(','))
+            if 'k=2' in filename:
+                model = HilltopK2([], w_o)
+            elif 'k=3' in filename:
+                model = HilltopK3([], w_o)
+            elif 'k=4' in filename:
+                model = HilltopK4([], w_o)
+            model.best_w = best_w
+            model.z_pivot = z_pivot
+            models.append(model)
+    return models
+
+def read_linder_data(filename):
+    models = []
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+        name = lines[0].strip()
+        for line in lines[2:]:
+            w_o, w_a, best_w, z_pivot = map(float, line.split(','))
+            model = Linder([], w_o, w_a)
+            model.best_w = best_w
+            model.z_pivot = z_pivot
+            models.append(model)
+    return models
 
 # Prints a table of numbers for a given model, including redshift (z) and distance modulus (mu). Followed by w*
 def print_data(model):
@@ -30,8 +60,6 @@ def print_data(model):
         print(f"[{model.z_list[i]:.3F}][{model.dist_mod_list[i]:.5f}]")
     print(f"Corresponding best-fit const w for this model: {model.best_w:.4f}")
     print(f"Corresponding z-pivot for this model: {model.z_pivot:.4f}\n")
-
-
 
 # Prints a table of numbers for a given model with specific redshift values (0.002, 0.5, 1, 1.5, 1.998).
 def print_key_data(model):
@@ -51,9 +79,8 @@ def plot(z_list, models):
     plt.title("mu VS z for Varying Equation of State Models")
     plt.xlabel("z (Redshift values)")
     plt.ylabel("mu (Distance Modulus)")
-    plt.legend()
+    plt.legend(fontsize=12)
     plt.show(block=True)
-
 
 # Plots the best-fit distance modulus (mu) with the original model's mu vs redshift (z).
 def plot_best_fit(z_list, model):
@@ -63,10 +90,9 @@ def plot_best_fit(z_list, model):
     plt.title("Best fit w for Equation of State Models")
     plt.xlabel("z (Redshift values)")
     plt.ylabel("mu (Distance Modulus)")
-    plt.legend()
+    plt.legend(fontsize=12)
     print(f"Best fit w for {model.label}: w={model.best_w:.2f}")
     plt.show(block=True)
-
 
 # Plots the model w_o vs the corresponding best-fit w (w*) for the same model with different w_o.
 def plot_w_vs_const_w(models):
@@ -84,10 +110,9 @@ def plot_w_vs_const_w(models):
     plt.title(f"w₀ and Corresponding Best-fit w (w*) for {models[0].name} Model")
     plt.xlabel("w₀", fontsize=20)
     plt.ylabel("w*", fontsize=20)
-    plt.legend()
+    plt.legend(fontsize=12)
     plt.show(block=True)
- 
- 
+
 # Plots w_o vs corresponding best-fit w for models from two different sets.
 def plot_w_vs_const_w_2models(models1,models2):
     model_w = []
@@ -107,10 +132,9 @@ def plot_w_vs_const_w_2models(models1,models2):
     plt.title(f"w₀ and Corresponding Best-fit w (w*) for {models1[0].name} and {models2[0].name} Models")
     plt.xlabel("w₀")
     plt.ylabel("w*")
-    plt.legend()
+    plt.legend(fontsize=12)
     plt.show(block=True)
-    
-    
+
 # Plots w_o vs corresponding best-fit w for models from three different sets.
 def plot_w_vs_const_w_3models(models1, models2, models3):
     model_w = []
@@ -136,46 +160,10 @@ def plot_w_vs_const_w_3models(models1, models2, models3):
     plt.ylabel("w*", fontsize=20, fontweight='bold')
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
-    plt.savefig("images/hilltop_models_best_fit.png")
-    plt.legend(loc='upper left', fontsize=12)
+    plt.legend(fontsize=12)
     plt.tight_layout()
+    plt.savefig("images/hilltop_models_best_fit.png", bbox_inches='tight', dpi=300)
     plt.show(block=True)
-    
-# Prints info from the hilltop models. w_o, w*, and z_pivot for eachof the files
-def print_info_hilltop(models1, models2, models3):
-    i=0
-    with open("hilltop_k=2_info.txt", 'w') as file:
-        file.write(f"{models1[0].name}\n")
-        file.write(f"   w_o      w*    z_pivot\n")
-        while (i < len(models1)):
-            file.write(f"{models1[i].w_o:.12f}, {models1[i].best_w:.12f}, {models1[i].z_pivot:.12f}\n")
-            i += 1
-            
-    i=0
-    with open("hilltop_k=3_info.txt", 'w') as file:
-        file.write(f"{models2[0].name}\n")
-        file.write(f"   w_o      w*    z_pivot\n")
-        while (i < len(models2)):
-            file.write(f"{models2[i].w_o:.12f}, {models2[i].best_w:.12f}, {models2[i].z_pivot:.12f}\n")
-            i += 1
-    i=0
-    with open("hilltop_k=4_info.txt", 'w') as file:
-        file.write(f"{models3[0].name}\n")
-        file.write(f"   w_o      w*    z_pivot\n")
-        while (i < len(models3)):
-            file.write(f"{models3[i].w_o:.12f}, {models3[i].best_w:.12f}, {models3[i].z_pivot:.12f}\n")
-            i += 1
-            
-# Prints info from the hilltop models. w_o, w*, and z_pivot for eachof the files
-def print_info_linder(models):
-    i=0
-    with open("linder_info.txt", 'w') as file:
-        file.write(f"{models[0].name}\n")
-        file.write(f"   w_o      w_a      w*    z_pivot\n")
-        while (i < len(models)):
-            file.write(f"{models[i].w_o:.12f}, {models[i].w_a:.12f}, {models[i].best_w:.12f}, {models[i].z_pivot:.12f}\n")
-            i += 1
-
 
 def plot_linder_best_fit_w(models):
     model_w_o = []
@@ -207,9 +195,8 @@ def plot_linder_best_fit_w(models):
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.tight_layout()
-    plt.savefig("images/linder_best_w.png")
+    plt.savefig("images/linder_best_w.png", bbox_inches='tight', dpi=300)
     plt.show()
-
 
 def plot_linder_z_pivot(models):
     model_w_o = []
@@ -241,9 +228,8 @@ def plot_linder_z_pivot(models):
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.tight_layout()
-    plt.savefig("images/linder_z_pivot")
+    plt.savefig("images/linder_z_pivot", bbox_inches='tight', dpi=300)
     plt.show()
-
 
 # Plots w_o vs corresponding pivot redshift (z_pivot) for models from two different sets.
 def plot_z_pivot_w_2models(models1,models2):
@@ -264,10 +250,9 @@ def plot_z_pivot_w_2models(models1,models2):
     #plt.title(f"w_o and Corresponding z_pivot for {models1[0].name} and {models2[0].name} Models")
     plt.xlabel("w_o")
     plt.ylabel("z")
-    plt.legend()
+    plt.legend(fontsize=12)
     plt.show(block=True)
-    
-    
+
 # Plots w_o vs corresponding pivot redshift (z_pivot) for models from two different sets.
 def plot_z_pivot_w_3models(models1,models2,models3):
     model_w = []
@@ -293,86 +278,31 @@ def plot_z_pivot_w_3models(models1,models2,models3):
     plt.legend(fontsize=12)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)    
-    plt.savefig("images/hilltop_models_pivot_z.png")
     plt.tight_layout()
+    plt.savefig("images/hilltop_models_z_pivot.png", bbox_inches='tight', dpi=300)
     plt.show(block=True)
-    
-
-# Generates and returns Linder modelsfor a range of w_o and w_a
-def linder_plot(z_list):
-    print("GENERATING LINDER")
-    linder_plots = []
-    w_o = -.99
-    while (w_o <= -.7):
-        w_a = -.20
-        while (w_a <= .21):
-            if (round(w_a,2) != 0):
-                print("w_o=", w_o, "w_a=", w_a)
-                linder_plots.append(Linder(z_list, w_o, w_a))
-            w_a += .01
-        w_o += .01
-    return linder_plots
-
-
-# Generates and returns HilltopK2 objects for a range of w values and given redshift values.
-def hilltopk2plot(z_list):
-    hilltopk2_plots = []
-    w_o = -.99
-    while (w_o <= -.7):
-        hilltopk2_plots.append(HilltopK2(z_list, w_o))
-        w_o += .01
-    return hilltopk2_plots
-
-
-# Generates and returns HilltopK3 objects for a range of w values and given redshift values.
-def hilltopk3plot(z_list):
-    hilltopk3_plots = []
-    w_o = -.99
-    while (w_o <= -.7):
-        hilltopk3_plots.append(HilltopK3(z_list, w_o))
-        w_o += .01
-    return hilltopk3_plots
-
-
-# Generates and returns HilltopK4 objects for a range of w values and given redshift values.
-def hilltopk4plot(z_list):
-    hilltopk4_plots = []
-    w_o = -.99
-    while (w_o <= -.7):
-        hilltopk4_plots.append(HilltopK4(z_list, w_o))
-        w_o += .01
-    return hilltopk4_plots
-
 
 def main():
     print("Starting program: What do we learn by mapping dark energy to a single value of w?\n")
     z_list = np.arange(.002, 2, .002)
     
     ### HILLTOP ###
-    print('Running... Fetching Hilltop K=2')
-    hilltopK2_plots = hilltopk2plot(z_list)
-    print('Running... Fetching Hilltop K=3')
-    hilltopK3_plots = hilltopk3plot(z_list)
-    print('Running... Fetching Hilltop K=4')
-    hilltopK4_plots = hilltopk4plot(z_list)
-    print('Done with Hilltop calculations')
-    print_info_hilltop(hilltopK2_plots, hilltopK3_plots, hilltopK4_plots)
+    print('Reading Hilltop K=2 data')
+    hilltopK2_plots = read_hilltop_data("figures_and_data/hilltop_k=2_info.txt")
+    print('Reading Hilltop K=3 data')
+    hilltopK3_plots = read_hilltop_data("figures_and_data/hilltop_k=3_info.txt")
+    print('Reading Hilltop K=4 data')
+    hilltopK4_plots = read_hilltop_data("figures_and_data/hilltop_k=4_info.txt")
+    print('Done reading Hilltop data')
     plot_w_vs_const_w_3models(hilltopK2_plots, hilltopK3_plots, hilltopK4_plots)  
     plot_z_pivot_w_3models(hilltopK2_plots, hilltopK3_plots, hilltopK4_plots)  
     
     ### LINDER ###
-    print('Running... Fetching Linder')
-    linder_plots = linder_plot(z_list)
-    print("Done with Linder calculations")
-    print_info_linder(linder_plots)
+    print('Reading Linder data')
+    linder_plots = read_linder_data("figures_and_data/linder_info.txt")
+    print("Done reading Linder data")
     plot_linder_best_fit_w(linder_plots)
     plot_linder_z_pivot(linder_plots)
-    ###
-
     
 if __name__ == "__main__":
     main()
-
-
-# 9/19. SCHERRER HILLTOP PAPER K=3. do the derivation and get omega phi as a function of a. Do derivation. Then once you can get this in a full w= then compare and use to find the best fit w.
-# do the same to find pivot a for the cubic model. 
